@@ -381,6 +381,25 @@ func TestIndexPacks(t *testing.T) {
 	rtest.Assert(t, packs.Equals(idxPacks), "packs in index do not match packs added to index")
 }
 
+func BenchmarkIndexStore(t *testing.B) {
+	for i := 0; i < t.N; i++ {
+		idx := repository.NewIndex()
+
+		for i := 0; i < 1000; i++ {
+			packID := restic.NewRandomID()
+			idx.Store(restic.PackedBlob{
+				Blob: restic.Blob{
+					Type:   restic.DataBlob,
+					ID:     restic.NewRandomID(),
+					Offset: 0,
+					Length: 23,
+				},
+				PackID: packID,
+			})
+		}
+	}
+}
+
 const maxPackSize = 16 * 1024 * 1024
 
 // This function generates a (insecure) random ID, similar to NewRandomID
